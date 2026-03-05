@@ -1,7 +1,17 @@
 import sqlite3
 
+# Allowed cities for validation
+ALLOWED_CITIES = {"Mumbai", "Delhi", "Bangalore", "Chennai"}
+
 def city_kpi(city: str):
-    """Calculate KPIs for a specific city with SQL injection protection"""
+    """Calculate KPIs for a specific city with SQL injection protection and city validation"""
+    
+    # Validate city is in allowlist
+    if city not in ALLOWED_CITIES:
+        print(f"\nError: City '{city}' is not in the allowed cities list.")
+        print(f"Allowed cities: {', '.join(sorted(ALLOWED_CITIES))}")
+        return
+    
     conn = sqlite3.connect('data/db/analytics.db')
     cursor = conn.cursor()
     
@@ -39,3 +49,6 @@ if __name__ == "__main__":
     
     # SQL injection attempt (should fail safely)
     city_kpi("Mumbai' OR 1=1 --")
+    
+    # Invalid city test (should be rejected by allowlist)
+    city_kpi("New York")
